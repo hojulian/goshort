@@ -12,26 +12,26 @@ import (
 
 type GoShort struct {
 	Addr  string
-	Mux   *http.ServeMux
+	mux   *http.ServeMux
 	mutex *sync.Mutex
 	src   rand.Source
 }
 
-func New(addr string) *GoShort {
+func New(addr string, mux *http.ServeMux) *GoShort {
 	return &GoShort{
 		Addr:  addr,
-		Mux:   http.NewServeMux(),
+		mux:   mux,
 		mutex: &sync.Mutex{},
 		src:   rand.NewSource(time.Now().UnixNano()),
 	}
 }
 
 func (g *GoShort) SetupRoutes() {
-	g.Mux.HandleFunc("/s", g.Shorten)
+	g.mux.HandleFunc("/s", g.Shorten)
 }
 
 func (g *GoShort) addHandler(pattern string, handler http.Handler) {
-	g.Mux.Handle(pattern, handler)
+	g.mux.Handle(pattern, handler)
 }
 
 func (g *GoShort) Shorten(w http.ResponseWriter, r *http.Request) {

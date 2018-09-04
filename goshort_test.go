@@ -18,13 +18,14 @@ type Body struct {
 }
 
 func run() {
-	var gs = New(addr)
+	var mux = http.NewServeMux()
+	var gs = New(addr, mux)
 	var srv = &http.Server{
 		Addr:         gs.Addr,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  120 * time.Second,
-		Handler:      gs.Mux,
+		Handler:      mux,
 	}
 	gs.SetupRoutes()
 	_ = srv.ListenAndServe()
