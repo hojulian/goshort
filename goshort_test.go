@@ -17,7 +17,7 @@ type Body struct {
 	Body string `json:"body"`
 }
 
-func init() {
+func run() {
 	var gs = New(addr)
 	var srv = &http.Server{
 		Addr:         gs.Addr,
@@ -27,15 +27,14 @@ func init() {
 		Handler:      gs.Mux,
 	}
 	gs.SetupRoutes()
-	go func() {
-		_ = srv.ListenAndServe()
-	}()
+	_ = srv.ListenAndServe()
 }
 
 func TestShorten(t *testing.T) {
 	t.Run(
 		"shortening and expanding",
 		func(t *testing.T) {
+			go run()
 			// shorten
 			var body = Body{
 				Body: "http://www.apple.com",
@@ -50,7 +49,7 @@ func TestShorten(t *testing.T) {
 			b, err := ioutil.ReadAll(res.Body)
 			require.Nil(t, err)
 			var s = Body{}
-			err = json.Unmarshal(b, s)
+			err = json.Unmarshal(b, &s)
 			require.Nil(t, err)
 			res, err = http.Get(s.Body)
 			require.Nil(t, err)
